@@ -1,0 +1,2 @@
+# Spring_Hibernate_maven_xml_Demo
+spring_hibernate从独立到整合Demo
