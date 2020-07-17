@@ -9,19 +9,35 @@
                 			http://www.springframework.org/schema/aop
                 			http://www.springframework.org/schema/aop/spring-aop.xsd
                 			http://www.springframework.org/schema/context
-                			http://www.springframework.org/schema/contex/spring-contex.xsd
+                			http://www.springframework.org/schema/context/spring-context.xsd
                 			http://www.springframework.org/schema/tx
                 			http://www.springframework.org/schema/tx/spring-tx.xsd">
 <bean id="customerService" class="com.yang.service.impl.CustomerServiceImpl">
 	<property name="customerDao" ref="customerDao"></property>
 </bean>
-<bean id="customerDao" class="com.yang.dao.impl.CustomerDaoImpl"></bean>
+<bean id="customerDao" class="com.yang.dao.impl.CustomerDaoImpl">
+	<property name="session" ref="session"></property>
+</bean>
 
 <bean id="linkmanService" class="com.yang.service.impl.LinkManServiceImpl">
 	<property name="linkManDao" ref="linkManDao"></property>
 </bean>
 
-<bean id="linkManDao" class="com.yang.dao.impl.LinkManDaoImpl"></bean>
+<bean id="linkManDao" class="com.yang.dao.impl.LinkManDaoImpl">
+	<property name="session" ref="session"></property>
+</bean>
 
-<bean id="hibernateUtil" class="com.yang.utils.HibernateUtil"></bean>
+<bean id="session" class="com.yang.utils.HibernateUtil" factory-method="getCurrentSession"></bean>
+
+<bean id="transactionAdvice" class="com.yang.advice.TransactionAdvice">
+	<property name="session" ref="session"></property>
+</bean>
+<aop:config>
+	<aop:aspect id="transactionAspect" ref="transactionAdvice">
+		<aop:pointcut expression="execution(* com.yang.service.impl.*.*(..))" id="pointcut1"/>
+		<aop:before method="begin" pointcut-ref="pointcut1"/>
+		<aop:after-returning method="commit" pointcut-ref="pointcut1"/>
+		<aop:after-throwing method="rollback" pointcut-ref="pointcut1"/>
+	</aop:aspect>
+</aop:config>
 </beans>

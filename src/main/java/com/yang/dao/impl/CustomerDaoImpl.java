@@ -10,6 +10,11 @@ import com.yang.entity.Customer;
 import com.yang.utils.HibernateUtil;
 
 public class CustomerDaoImpl implements CustomerDao {
+	private Session session;
+	
+	public void setSession(Session session) {
+		this.session = session;
+	}
 	@Override
 	public Customer selectOne(int id) {
 		
@@ -25,16 +30,12 @@ public class CustomerDaoImpl implements CustomerDao {
 
 	@Override
 	public void saveCust() {
-		Session session = HibernateUtil.getCurrentSession();
-		Transaction tx = session.beginTransaction();
 		Customer cust = new Customer();
-		cust.setCustName("唐僧");
-		cust.setCustAddress("大唐");
-		cust.setCustLevel("级别1");
-		cust.setCustPhone("15235373881");
+		cust.setCustName("白龙马");
+		cust.setCustAddress("白龙涧");
+		cust.setCustLevel("级别2");
+		cust.setCustPhone("15235373882");
 		session.save(cust);
-		tx.commit();
-		session.close();
 	}
 
 	@Override
