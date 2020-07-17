@@ -31,10 +31,10 @@ public class CustomerDaoImpl implements CustomerDao {
 	@Override
 	public void saveCust() {
 		Customer cust = new Customer();
-		cust.setCustName("白龙马");
-		cust.setCustAddress("白龙涧");
+		cust.setCustName("孙悟空");
+		cust.setCustAddress("花果山");
 		cust.setCustLevel("级别2");
-		cust.setCustPhone("15235373882");
+		cust.setCustPhone("15235373883");
 		session.save(cust);
 	}
 
