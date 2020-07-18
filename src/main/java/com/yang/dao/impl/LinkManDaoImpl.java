@@ -3,15 +3,18 @@ package com.yang.dao.impl;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.yang.dao.LinkManDao;
 import com.yang.entity.LinkMan;
 
 public class LinkManDaoImpl implements LinkManDao {
-	private Session session;
 	
-	public void setSession(Session session) {
-		this.session = session;
+	private HibernateTemplate hibernateTemplate;
+	
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 	
 	@Override

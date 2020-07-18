@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.yang.service.CustomerService;
+import com.yang.test.TestConfig;
 
 public class Client {
 

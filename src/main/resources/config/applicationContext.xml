@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:aop="http://www.springframework.org/schema/aop"
-        xmlns:context="http://www.springframework.org/schema/context"
-        xmlns:tx="http://www.springframework.org/schema/tx"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                 			http://www.springframework.org/schema/beans/spring-beans.xsd
                 			http://www.springframework.org/schema/aop
                 			http://www.springframework.org/schema/aop/spring-aop.xsd
@@ -12,11 +12,12 @@
                 			http://www.springframework.org/schema/context/spring-context.xsd
                 			http://www.springframework.org/schema/tx
                 			http://www.springframework.org/schema/tx/spring-tx.xsd">
+<context:property-placeholder location="classpath:db/db.properties" />
 <bean id="customerService" class="com.yang.service.impl.CustomerServiceImpl">
 	<property name="customerDao" ref="customerDao"></property>
 </bean>
 <bean id="customerDao" class="com.yang.dao.impl.CustomerDaoImpl">
-	<property name="session" ref="session"></property>
+	<property name="hibernateTemplate" ref="hibernateTemplate"></property>
 </bean>
 
 <bean id="linkmanService" class="com.yang.service.impl.LinkManServiceImpl">
@@ -24,20 +25,63 @@
 </bean>
 
 <bean id="linkManDao" class="com.yang.dao.impl.LinkManDaoImpl">
-	<property name="session" ref="session"></property>
+	<property name="hibernateTemplate" ref="hibernateTemplate"></property>
+</bean>
+<!--  让spring来接管session的创建 -->
+<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+	<property name="sessionFactory" ref="sessionFactory"></property>
 </bean>
 
-<bean id="session" class="com.yang.utils.HibernateUtil" factory-method="getCurrentSession"></bean>
-
-<bean id="transactionAdvice" class="com.yang.advice.TransactionAdvice">
-	<property name="session" ref="session"></property>
+<!-- 让spring来创建sessionFactory:需要配置数据源，和加载hibernate的核心配置文件 -->
+<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	<property name="dataSource" ref="dataSource"></property>
+	<!-- 读取hibernate主配置文件的位置 
+	<property name="configLocation" value="classpath:config/hibernate.cfg.xml"></property>-->
+	<!-- 把hibernate主配置文件的信息配置到sessionFactory中 -->
+	<property name="hibernateProperties">
+		<props>
+			<prop key="hibernate.connection.dialect">org.hibernate.MySQL5InnoDBDialect</prop>
+			<prop key="hibernate.show_sql">true</prop>
+			<prop key="hibernate.format_sql">true</prop>
+			<prop key="hibernate.hbm2ddl.auto">update</prop>
+		</props>
+	</property>
+	<!-- 映射文件位置 -->
+	<property name="mappingLocations">
+		<array>
+			<value>classpath:com/yang/entity/*.hbm.xml</value>
+		</array>
+	</property>
 </bean>
-<aop:config>
-	<aop:aspect id="transactionAspect" ref="transactionAdvice">
-		<aop:pointcut expression="execution(* com.yang.service.impl.*.*(..))" id="pointcut1"/>
-		<aop:before method="begin" pointcut-ref="pointcut1"/>
-		<aop:after-returning method="commit" pointcut-ref="pointcut1"/>
-		<aop:after-throwing method="rollback" pointcut-ref="pointcut1"/>
-	</aop:aspect>
+
+ <!-- 配置数据源 -->
+<context:property-placeholder location="classpath:db/db.properties"/>
+<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	<property name="driverClass" value="${jdbc.driverClassName}"></property>
+	<property name="jdbcUrl" value="${jdbc.jdbcUrl}"></property>
+	<property name="user" value="${jdbc.user}"></property>
+	<property name="password" value="${jdbc.password}"></property>
+</bean>
+ <!-- 配置spring管理事务 -->
+<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+	<property name="sessionFactory" ref="sessionFactory"></property>
+</bean>
+<!-- 配置XML方式管理事务--> 
+ <!-- 配置通知 -->
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	<tx:attributes>
+		<!-- 匹配业务类中的方法 -->
+		<tx:method name="save*" propagation="REQUIRED" read-only="false"/>
+		<tx:method name="update*" propagation="REQUIRED" read-only="false"/>
+		<tx:method name="delete*" propagation="REQUIRED" read-only="false"/>
+		<tx:method name="select*" propagation="SUPPORTS" read-only="true"/>
+		<tx:method name="*" propagation="REQUIRED" read-only="false"/>
+	</tx:attributes>
+</tx:advice>
+<!-- 配置AOP -->
+<aop:config>	
+	<aop:pointcut expression="execution(* com.yang.service.impl.*.*(..))" id="pointcut1"/>
+	<!--  配置切面：将增强方法作用到切点。通知和切入点的结合 -->
+	<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut1"/>	
 </aop:config>
 </beans>

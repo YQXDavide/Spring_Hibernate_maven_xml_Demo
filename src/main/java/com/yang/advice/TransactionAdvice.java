@@ -7,21 +7,21 @@ import org.hibernate.Session;
  * @author yang
  *
  */
-public class TransactionAdvice {
-	private Session session;
-	
-	public void setSession(Session session) {
-		this.session = session;
-	}
-	public void begin() {
-		session.beginTransaction();
-	}
-	
-	public void commit() {
-		session.getTransaction().commit();
-	}
-	
-	public void rollback() {
-		session.getTransaction().rollback();
-	}
-}
+//public class TransactionAdvice {
+//	private Session session;
+//	
+//	public void setSession(Session session) {
+//		this.session = session;
+//	}
+//	public void begin() {
+//		session.beginTransaction();
+//	}
+//	
+//	public void commit() {
+//		session.getTransaction().commit();
+//	}
+//	
+//	public void rollback() {
+//		session.getTransaction().rollback();
+//	}
+//}

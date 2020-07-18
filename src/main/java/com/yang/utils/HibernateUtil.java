@@ -10,20 +10,20 @@ import org.hibernate.cfg.Configuration;
  * @author yang
  *
  */
-public class HibernateUtil {
-	private static SessionFactory factory;
-	static {
-		try {
-			Configuration config = new Configuration();
-			config.configure("config/hibernate.cfg.xml");
-			factory = config.buildSessionFactory();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	//获取当前线程绑定的session
-	public static Session getCurrentSession() {
-		return factory.getCurrentSession();
-	}
-}
+//public class HibernateUtil {
+//	private static SessionFactory factory;
+//	static {
+//		try {
+//			Configuration config = new Configuration();
+//			config.configure("config/hibernate.cfg.xml");
+//			factory = config.buildSessionFactory();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	//获取当前线程绑定的session
+//	public static Session getCurrentSession() {
+//		return factory.getCurrentSession();
+//	}
+//}

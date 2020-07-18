@@ -2,18 +2,17 @@ package com.yang.dao.impl;
 
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.SessionFactory;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 
 import com.yang.dao.CustomerDao;
 import com.yang.entity.Customer;
-import com.yang.utils.HibernateUtil;
 
 public class CustomerDaoImpl implements CustomerDao {
-	private Session session;
+	private HibernateTemplate hibernateTemplate;
 	
-	public void setSession(Session session) {
-		this.session = session;
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 	@Override
 	public Customer selectOne(int id) {
@@ -31,11 +30,12 @@ public class CustomerDaoImpl implements CustomerDao {
 	@Override
 	public void saveCust() {
 		Customer cust = new Customer();
-		cust.setCustName("孙悟空");
-		cust.setCustAddress("花果山");
+		cust.setCustName("猪八戒");
+		cust.setCustAddress("高老庄");
 		cust.setCustLevel("级别2");
-		cust.setCustPhone("15235373883");
-		session.save(cust);
+		cust.setCustPhone("15235373884");
+		hibernateTemplate.save(cust);
+		
 	}
 
 	@Override
